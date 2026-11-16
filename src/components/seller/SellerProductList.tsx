@@ -183,3 +183,4 @@ export default function SellerProductList({ products }: { products: ProductRow[]
     </div>
   );
 }
+

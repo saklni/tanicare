@@ -389,3 +389,4 @@ export default function SellerProductForm({ product }: { product?: ProductData }
     </div>
   );
 }
+

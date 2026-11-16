@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "./auth";
 import { normalizePhone } from "@/lib/whatsapp";
 import { slugify } from "@/lib/format";
@@ -80,15 +81,23 @@ export async function saveProduct(_: State, fd: FormData): Promise<State> {
 }
 
 export async function toggleActive(id: string, active: boolean) {
-  const { supabase } = await requireAdmin();
-  await supabase.from("products").update({ is_active: active }).eq("id", id);
+  await requireAdmin();
+  try {
+    await prisma.product.update({ where: { id }, data: { isActive: active } });
+  } catch {
+    const { supabase } = await requireAdmin();
+    await supabase.from("products").update({ is_active: active }).eq("id", id);
+  }
   refresh();
 }
 export async function deleteProduct(id: string) {
-  const { supabase } = await requireAdmin();
-  const { data } = await supabase.from("products").select("image_path").eq("id", id).maybeSingle();
-  const { error } = await supabase.from("products").delete().eq("id", id);
-  if (!error && data?.image_path) await supabase.storage.from("product-images").remove([data.image_path]);
+  await requireAdmin();
+  try {
+    await prisma.product.delete({ where: { id } });
+  } catch {
+    const { supabase } = await requireAdmin();
+    await supabase.from("products").delete().eq("id", id);
+  }
   refresh();
 }
 
