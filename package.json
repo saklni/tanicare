@@ -16,6 +16,10 @@
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
   },
+  "allowScripts": {
+    "@prisma/engines": true,
+    "prisma": true
+  },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
