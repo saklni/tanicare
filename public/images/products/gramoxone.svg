@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0F9FF"/>
+      <stop offset="100%" stop-color="#E0F2FE"/>
+    </linearGradient>
+    <linearGradient id="bottle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="40%" stop-color="#2563EB"/>
+      <stop offset="80%" stop-color="#1D4ED8"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="60%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#991B1B"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="15" flood-color="#0B2545" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <rect width="600" height="450" fill="url(#bg)"/>
+  <ellipse cx="300" cy="385" rx="135" ry="22" fill="#0B2545" opacity="0.1"/>
+  <g filter="url(#shadow)">
+    <!-- Cap -->
+    <rect x="270" y="75" width="60" height="35" rx="6" fill="url(#cap)"/>
+    <rect x="276" y="65" width="48" height="12" rx="4" fill="#7F1D1D"/>
+    <!-- Bottle neck -->
+    <path d="M266 110 L334 110 L350 150 L250 150 Z" fill="url(#bottle)"/>
+    <!-- Bottle body -->
+    <rect x="225" y="145" width="150" height="230" rx="22" fill="url(#bottle)"/>
+    <!-- Label -->
+    <rect x="232" y="175" width="136" height="175" rx="8" fill="#FFFFFF"/>
+    <!-- Label Syngenta banner -->
+    <path d="M232 175 L368 175 L368 205 L232 205 Z" fill="#047857"/>
+    <text x="300" y="196" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">syngenta</text>
+    <text x="300" y="232" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#1E3A8A" text-anchor="middle">GRAMOXONE</text>
+    <rect x="265" y="240" width="70" height="18" rx="4" fill="#DC2626"/>
+    <text x="300" y="253" font-family="system-ui, sans-serif" font-weight="800" font-size="11" fill="#FFFFFF" text-anchor="middle">276 SL</text>
+    <text x="300" y="278" font-family="system-ui, sans-serif" font-weight="700" font-size="11" fill="#1F2937" text-anchor="middle">HERBISIDA KONTAK</text>
+    <text x="300" y="294" font-family="system-ui, sans-serif" font-weight="500" font-size="8.5" fill="#4B5563" text-anchor="middle">Parakuat Diklorida 276 g/l</text>
+    <line x1="245" y1="305" x2="355" y2="305" stroke="#E5E7EB" stroke-width="1.5"/>
+    <text x="300" y="322" font-family="system-ui, sans-serif" font-weight="700" font-size="9.5" fill="#DC2626" text-anchor="middle">GOSONG DALAM JAM</text>
+    <rect x="250" y="332" width="100" height="18" rx="4" fill="#1E3A8A"/>
+    <text x="300" y="345" font-family="system-ui, sans-serif" font-weight="800" font-size="11" fill="#FFFFFF" text-anchor="middle">ISI: 1 LITER</text>
+  </g>
+</svg>

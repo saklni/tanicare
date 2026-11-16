@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7FEE7"/>
+      <stop offset="100%" stop-color="#ECFCCB"/>
+    </linearGradient>
+    <linearGradient id="bottle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="40%" stop-color="#FFFFFF"/>
+      <stop offset="70%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#65A30D"/>
+      <stop offset="60%" stop-color="#84CC16"/>
+      <stop offset="100%" stop-color="#4D7C0F"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#365314" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="600" height="450" fill="url(#bg)"/>
+  <ellipse cx="300" cy="380" rx="115" ry="20" fill="#365314" opacity="0.1"/>
+  <g filter="url(#shadow)">
+    <!-- Cap -->
+    <rect x="274" y="90" width="52" height="30" rx="5" fill="url(#cap)"/>
+    <rect x="280" y="80" width="40" height="12" rx="3" fill="#3F6212"/>
+    <!-- Bottle neck -->
+    <path d="M270 120 L330 120 L340 160 L260 160 Z" fill="url(#bottle)"/>
+    <!-- Bottle body -->
+    <rect x="240" y="155" width="120" height="215" rx="18" fill="url(#bottle)" stroke="#CBD5E1" stroke-width="1"/>
+    <!-- Label -->
+    <rect x="246" y="180" width="108" height="165" rx="6" fill="#FFFFFF"/>
+    
+    <!-- Top Brand DGW -->
+    <path d="M246 180 L354 180 L354 205 L246 205 Z" fill="#65A30D"/>
+    <text x="300" y="197" font-family="system-ui, sans-serif" font-weight="900" font-size="13" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">DGW</text>
+    
+    <!-- Bactocyn Name -->
+    <text x="300" y="230" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#166534" text-anchor="middle">BACTOCYN</text>
+    <rect x="266" y="236" width="68" height="16" rx="4" fill="#EAB308"/>
+    <text x="300" y="248" font-family="system-ui, sans-serif" font-weight="800" font-size="10" fill="#14532D" text-anchor="middle">150 AL</text>
+    
+    <text x="300" y="270" font-family="system-ui, sans-serif" font-weight="700" font-size="9" fill="#1F2937" text-anchor="middle">BAKTERISIDA SISTEMIK</text>
+    <text x="300" y="284" font-family="system-ui, sans-serif" font-weight="500" font-size="8" fill="#4B5563" text-anchor="middle">Oksitetrasiklin 150 g/l</text>
+    <line x1="254" y1="294" x2="346" y2="294" stroke="#E5E7EB" stroke-width="1"/>
+    
+    <text x="300" y="310" font-family="system-ui, sans-serif" font-weight="700" font-size="9" fill="#15803D" text-anchor="middle">Cegah Layu Bakteri</text>
+    <rect x="256" y="322" width="88" height="18" rx="4" fill="#166534"/>
+    <text x="300" y="335" font-family="system-ui, sans-serif" font-weight="800" font-size="10" fill="#FFFFFF" text-anchor="middle">ISI: 200 ML</text>
+  </g>
+</svg>

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFF6FF"/>
+      <stop offset="100%" stop-color="#DBEAFE"/>
+    </linearGradient>
+    <linearGradient id="bag" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1D4ED8"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#1E3A8A" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="600" height="450" fill="url(#bg)"/>
+  <ellipse cx="300" cy="385" rx="145" ry="20" fill="#1E3A8A" opacity="0.12"/>
+  <g filter="url(#shadow)">
+    <!-- Bag Body -->
+    <path d="M205 95 Q300 80 395 95 L385 375 Q300 385 215 375 Z" fill="url(#bag)"/>
+    <!-- Top seal stitching -->
+    <line x1="212" y1="108" x2="388" y2="108" stroke="#FDE047" stroke-width="2.5" stroke-dasharray="5 3"/>
+    
+    <!-- White brand box -->
+    <rect x="230" y="130" width="140" height="230" rx="10" fill="#FFFFFF"/>
+    
+    <!-- Header Meroke Tetap Jaya -->
+    <rect x="230" y="130" width="140" height="32" rx="10" fill="#1E3A8A"/>
+    <text x="300" y="151" font-family="system-ui, sans-serif" font-weight="900" font-size="11" fill="#FBBF24" text-anchor="middle" letter-spacing="1">MEROKE TETAP JAYA</text>
+    
+    <!-- NPK MUTIARA Title -->
+    <text x="300" y="188" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#1E3A8A" text-anchor="middle">NPK MUTIARA</text>
+    
+    <!-- 16-16-16 Giant Formula -->
+    <rect x="245" y="198" width="110" height="32" rx="6" fill="#DC2626"/>
+    <text x="300" y="221" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#FFFFFF" text-anchor="middle">16 - 16 - 16</text>
+    
+    <text x="300" y="248" font-family="system-ui, sans-serif" font-weight="700" font-size="10" fill="#374151" text-anchor="middle">PUPUK MAJEMUK LENGKAP</text>
+    
+    <!-- Nutrient circles -->
+    <g transform="translate(245, 260)">
+      <circle cx="20" cy="18" r="14" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+      <text x="20" y="22" font-family="system-ui, sans-serif" font-weight="800" font-size="10" fill="#1D4ED8" text-anchor="middle">N</text>
+      <circle cx="55" cy="18" r="14" fill="#FEF2F2" stroke="#DC2626" stroke-width="1.5"/>
+      <text x="55" y="22" font-family="system-ui, sans-serif" font-weight="800" font-size="10" fill="#B91C1C" text-anchor="middle">P</text>
+      <circle cx="90" cy="18" r="14" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+      <text x="90" y="22" font-family="system-ui, sans-serif" font-weight="800" font-size="10" fill="#15803D" text-anchor="middle">K</text>
+    </g>
+    
+    <text x="300" y="315" font-family="system-ui, sans-serif" font-weight="700" font-size="9" fill="#059669" text-anchor="middle">Tanaman Subur &amp; Cepat Berbuah</text>
+    
+    <!-- Netto -->
+    <rect x="250" y="326" width="100" height="22" rx="5" fill="#1E3A8A"/>
+    <text x="300" y="341" font-family="system-ui, sans-serif" font-weight="800" font-size="11" fill="#FFFFFF" text-anchor="middle">BERAT: 1 KG</text>
+  </g>
+</svg>

@@ -8,7 +8,7 @@ import type { Product } from "@/lib/types";
 
 export default function ProductCard({ p }: { p: Product }) {
   return (
-    <article className="group card flex flex-col overflow-hidden bg-white rounded-2xl border border-ink-500/15 hover:border-green-600/40 hover:shadow-lg transition-all duration-200">
+    <article className="group card flex flex-col overflow-hidden bg-white rounded-2xl border border-ink-500/15 hover:border-green-600/50 hover:shadow-xl transition-all duration-300">
       <Link
         href={`/produk/${p.slug}`}
         className="relative block aspect-[4/3] bg-cream-50 overflow-hidden"
@@ -16,7 +16,7 @@ export default function ProductCard({ p }: { p: Product }) {
       >
         <ProductImage src={imageUrl(p.image_path)} alt={p.name} />
         {p.is_featured && (
-          <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-amber-500/95 backdrop-blur-xs px-2.5 py-0.5 text-[11px] font-bold text-white shadow-xs">
+          <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-amber-500/95 backdrop-blur-xs px-2.5 py-0.5 text-[11px] font-bold text-white shadow-xs">
             <Star size={11} fill="white" /> Unggulan
           </span>
         )}
@@ -24,13 +24,16 @@ export default function ProductCard({ p }: { p: Product }) {
 
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-center justify-between gap-1 text-xs">
-          <span className="rounded-md bg-green-50 px-2 py-0.5 font-bold text-green-800 text-[11px]">
+          <span className="rounded-md bg-green-50 px-2.5 py-0.5 font-bold text-green-800 text-[11px]">
             {p.category}
           </span>
           <StockBadge stock={p.stock} />
         </div>
 
-        <h3 className="line-clamp-2 text-sm font-bold text-ink-900 group-hover:text-green-800 transition" title={p.name}>
+        <h3
+          className="line-clamp-2 text-sm font-bold text-ink-900 group-hover:text-green-800 transition min-h-[40px] leading-snug"
+          title={p.name}
+        >
           <Link href={`/produk/${p.slug}`}>{p.name}</Link>
         </h3>
 
@@ -41,14 +44,12 @@ export default function ProductCard({ p }: { p: Product }) {
           </div>
         )}
 
-        <div className="mt-auto pt-2 flex items-center justify-between gap-2 border-t border-ink-500/10">
-          <div>
-            <span className="text-[10px] text-ink-500 block leading-none">Harga</span>
-            <p className="text-base font-extrabold text-green-800 mt-0.5">{idr(p.price)}</p>
+        <div className="mt-auto pt-3 border-t border-ink-500/10 flex flex-col gap-2.5">
+          <div className="flex items-baseline justify-between">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-ink-400">Harga Satuan</span>
+            <p className="text-base md:text-lg font-black text-green-800 tracking-tight">{idr(p.price)}</p>
           </div>
-          <div className="shrink-0">
-            <AddToCart product={p} />
-          </div>
+          <AddToCart product={p} />
         </div>
       </div>
     </article>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5F3FF"/>
+      <stop offset="100%" stop-color="#EDE9FE"/>
+    </linearGradient>
+    <linearGradient id="bottle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="40%" stop-color="#F8FAFC"/>
+      <stop offset="70%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="60%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#312E81" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="600" height="450" fill="url(#bg)"/>
+  <ellipse cx="300" cy="380" rx="120" ry="20" fill="#312E81" opacity="0.1"/>
+  <g filter="url(#shadow)">
+    <!-- Cap -->
+    <rect x="272" y="90" width="56" height="30" rx="5" fill="url(#cap)"/>
+    <rect x="278" y="80" width="44" height="12" rx="3" fill="#047857"/>
+    <!-- Bottle neck -->
+    <path d="M268 120 L332 120 L342 160 L258 160 Z" fill="url(#bottle)"/>
+    <!-- Bottle body -->
+    <rect x="238" y="155" width="124" height="215" rx="18" fill="url(#bottle)" stroke="#CBD5E1" stroke-width="1"/>
+    <!-- Label -->
+    <rect x="244" y="180" width="112" height="165" rx="6" fill="#FFFFFF"/>
+    
+    <!-- Top Brand Syngenta -->
+    <path d="M244 180 L356 180 L356 205 L244 205 Z" fill="#047857"/>
+    <text x="300" y="197" font-family="system-ui, sans-serif" font-weight="900" font-size="13" fill="#FFFFFF" text-anchor="middle" letter-spacing="1.5">syngenta</text>
+    
+    <!-- Score Name -->
+    <text x="300" y="230" font-family="system-ui, sans-serif" font-weight="900" font-size="20" fill="#4338CA" text-anchor="middle">SCORE</text>
+    <rect x="268" y="236" width="64" height="16" rx="4" fill="#7C3AED"/>
+    <text x="300" y="248" font-family="system-ui, sans-serif" font-weight="800" font-size="10" fill="#FFFFFF" text-anchor="middle">250 EC</text>
+    
+    <text x="300" y="270" font-family="system-ui, sans-serif" font-weight="700" font-size="10" fill="#1F2937" text-anchor="middle">FUNGISIDA + ZPT</text>
+    <text x="300" y="284" font-family="system-ui, sans-serif" font-weight="500" font-size="8" fill="#4B5563" text-anchor="middle">Difenokonazol 250 g/l</text>
+    <line x1="254" y1="294" x2="346" y2="294" stroke="#E5E7EB" stroke-width="1"/>
+    
+    <text x="300" y="310" font-family="system-ui, sans-serif" font-weight="700" font-size="9" fill="#059669" text-anchor="middle">Bulir Padi Bernas</text>
+    <rect x="256" y="322" width="88" height="18" rx="4" fill="#4338CA"/>
+    <text x="300" y="335" font-family="system-ui, sans-serif" font-weight="800" font-size="10" fill="#FFFFFF" text-anchor="middle">ISI: 250 ML</text>
+  </g>
+</svg>

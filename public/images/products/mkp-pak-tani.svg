@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F0FDF4"/>
+      <stop offset="100%" stop-color="#DCFCE7"/>
+    </linearGradient>
+    <linearGradient id="pouch" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="60%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#F1F5F9"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="14" flood-color="#14532D" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <rect width="600" height="450" fill="url(#bg)"/>
+  <ellipse cx="300" cy="385" rx="145" ry="20" fill="#14532D" opacity="0.1"/>
+  <g filter="url(#shadow)">
+    <!-- Pouch Body -->
+    <path d="M205 95 Q300 80 395 95 L385 375 Q300 385 215 375 Z" fill="url(#pouch)" stroke="#CBD5E1" stroke-width="2"/>
+    <!-- Seal lines -->
+    <line x1="212" y1="106" x2="388" y2="106" stroke="#16A34A" stroke-width="2.5"/>
+    <line x1="214" y1="112" x2="386" y2="112" stroke="#16A34A" stroke-width="1.5"/>
+    
+    <!-- Top Green Header -->
+    <path d="M211 125 L389 125 L385 165 L215 165 Z" fill="#15803D"/>
+    <text x="300" y="148" font-family="system-ui, sans-serif" font-weight="900" font-size="13" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">SAPROTAN UTAMA</text>
+    <text x="300" y="160" font-family="system-ui, sans-serif" font-weight="800" font-size="9" fill="#FEF08A" text-anchor="middle">PAK TANI</text>
+    
+    <!-- Giant MKP -->
+    <text x="300" y="206" font-family="system-ui, sans-serif" font-weight="900" font-size="28" fill="#EA580C" text-anchor="middle">MKP</text>
+    <text x="300" y="224" font-family="system-ui, sans-serif" font-weight="800" font-size="11" fill="#1F2937" text-anchor="middle">MONO KALIUM FOSFAT</text>
+    
+    <!-- Formulation Box -->
+    <rect x="238" y="235" width="124" height="40" rx="6" fill="#FFF7ED" stroke="#FDBA74" stroke-width="1.5"/>
+    <text x="300" y="252" font-family="system-ui, sans-serif" font-weight="800" font-size="11" fill="#C2410C" text-anchor="middle">P2O5: 52%</text>
+    <text x="300" y="268" font-family="system-ui, sans-serif" font-weight="800" font-size="11" fill="#15803D" text-anchor="middle">K2O: 34%</text>
+    
+    <text x="300" y="296" font-family="system-ui, sans-serif" font-weight="700" font-size="9" fill="#374151" text-anchor="middle">100% LARUT AIR TANPA ENDAPAN</text>
+    <text x="300" y="312" font-family="system-ui, sans-serif" font-weight="700" font-size="9.5" fill="#EA580C" text-anchor="middle">Merangsang Bunga &amp; Buah Lebat</text>
+    
+    <!-- Netto -->
+    <rect x="250" y="328" width="100" height="24" rx="5" fill="#15803D"/>
+    <text x="300" y="344" font-family="system-ui, sans-serif" font-weight="800" font-size="12" fill="#FFFFFF" text-anchor="middle">BERAT: 1 KG</text>
+  </g>
+</svg>
