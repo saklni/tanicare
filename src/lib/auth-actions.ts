@@ -37,12 +37,21 @@ export async function registerAction(_: AuthState, fd: FormData): Promise<AuthSt
   const name = String(fd.get("name") ?? "").trim();
   const email = String(fd.get("email") ?? "").trim().toLowerCase();
   const password = String(fd.get("password") ?? "").trim();
+  const confirmPassword = String(fd.get("confirm_password") ?? "").trim();
   const phone = String(fd.get("phone") ?? "").trim();
   const roleInput = String(fd.get("role") ?? "BUYER").toUpperCase();
   const role: UserRole = roleInput === "SELLER" ? "SELLER" : "BUYER";
 
-  if (!name || !email || !password) {
-    return { error: "Nama, email, dan password wajib diisi." };
+  if (!name || !email || !password || !confirmPassword) {
+    return { error: "Semua kolom bertanda bintang wajib diisi." };
+  }
+
+  if (password.length < 3) {
+    return { error: "Password minimal harus 3 karakter." };
+  }
+
+  if (password !== confirmPassword) {
+    return { error: "Konfirmasi password tidak cocok dengan password yang Anda masukkan." };
   }
 
   try {
@@ -89,7 +98,7 @@ export async function registerAction(_: AuthState, fd: FormData): Promise<AuthSt
     }
   } catch (err: any) {
     if (err?.digest?.startsWith("NEXT_REDIRECT")) throw err;
-    return { error: "Gagal mendaftar. Silakan coba beberapa saat lagi." };
+    return { error: "Gagal mendaftar. Silakan periksa koneksi lalu coba lagi." };
   }
 }
 
@@ -98,4 +107,3 @@ export async function logoutAction() {
   revalidatePath("/", "layout");
   redirect("/");
 }
-

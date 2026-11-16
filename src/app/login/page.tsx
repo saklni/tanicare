@@ -1,19 +1,12 @@
 "use client";
 import { useActionState, useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Sprout, ArrowRight, Shield, Store, User } from "lucide-react";
+import { Eye, EyeOff, Sprout, Lock, Mail, AlertCircle } from "lucide-react";
 import { loginAction } from "@/lib/auth-actions";
 
 export default function LoginPage() {
   const [state, action, pending] = useActionState(loginAction, undefined);
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const fillAccount = (e: string, p: string) => {
-    setEmail(e);
-    setPassword(p);
-  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-cream-50 p-4">
@@ -21,10 +14,12 @@ export default function LoginPage() {
         {/* Header Logo */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 font-display text-2xl font-bold text-green-800">
-            <Sprout size={28} />
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-green-800 to-green-600 text-white shadow-sm">
+              <Sprout size={20} />
+            </span>
             TaniCare
           </Link>
-          <p className="text-sm text-ink-600">Masuk untuk mengakses layanan katalog dan portal pengguna.</p>
+          <p className="text-sm text-ink-600">Masuk ke akun Anda untuk melanjutkan belanja atau mengelola toko.</p>
         </div>
 
         {/* Card Form */}
@@ -36,17 +31,18 @@ export default function LoginPage() {
               <label className="label" htmlFor="email">
                 Alamat Email
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nama@gmail.com"
-                autoComplete="username"
-                className="input"
-              />
+              <div className="relative">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="nama@email.com"
+                  autoComplete="username"
+                  className="input pl-10"
+                />
+                <Mail size={16} className="absolute left-3.5 top-3.5 text-ink-500 pointer-events-none" />
+              </div>
             </div>
 
             <div>
@@ -61,12 +57,11 @@ export default function LoginPage() {
                   name="password"
                   type={show ? "text" : "password"}
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Masukkan password"
+                  placeholder="Masukkan password Anda"
                   autoComplete="current-password"
-                  className="input pr-12"
+                  className="input pl-10 pr-12"
                 />
+                <Lock size={16} className="absolute left-3.5 top-3.5 text-ink-500 pointer-events-none" />
                 <button
                   type="button"
                   className="absolute right-1 top-0.5 btn-ghost !px-3"
@@ -79,95 +74,20 @@ export default function LoginPage() {
             </div>
 
             {state?.error && (
-              <div className="rounded-lg bg-danger/10 p-3 text-sm font-medium text-danger" role="alert">
-                {state.error}
+              <div className="rounded-lg bg-danger/10 p-3 text-sm font-medium text-danger flex items-center gap-2" role="alert">
+                <AlertCircle size={16} className="shrink-0" />
+                <span>{state.error}</span>
               </div>
             )}
 
-            <button type="submit" className="btn-primary w-full" disabled={pending}>
-              {pending ? "Memproses…" : "Masuk"}
+            <button type="submit" className="btn-primary w-full !py-2.5 shadow-sm" disabled={pending}>
+              {pending ? "Memverifikasi Akun…" : "Masuk"}
             </button>
           </form>
 
-          {/* Quick Demo Login */}
-          <div className="mt-6 border-t border-ink-500/15 pt-5">
-            <p className="text-xs font-semibold uppercase tracking-wider text-ink-500 text-center mb-3">
-              ⚡ Akun Contoh Cepat (Klik untuk Isi):
-            </p>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => fillAccount("buyer@gmail.com", "123")}
-                className="w-full flex items-center justify-between rounded-lg border border-green-200 bg-green-50/50 p-2.5 text-xs text-left hover:bg-green-100/60 transition"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-200 text-green-800">
-                    <User size={14} />
-                  </span>
-                  <div>
-                    <strong className="text-green-900">Buyer (Petani)</strong>
-                    <p className="text-ink-500 text-[11px]">buyer@gmail.com • pw: 123</p>
-                  </div>
-                </div>
-                <ArrowRight size={14} className="text-green-800" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fillAccount("seller@gmail.com", "123")}
-                className="w-full flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50/50 p-2.5 text-xs text-left hover:bg-blue-100/60 transition"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-200 text-blue-800">
-                    <Store size={14} />
-                  </span>
-                  <div>
-                    <strong className="text-blue-900">Seller 1: Toko Berkah</strong>
-                    <p className="text-ink-500 text-[11px]">seller@gmail.com • WA: +6281234567891</p>
-                  </div>
-                </div>
-                <ArrowRight size={14} className="text-blue-800" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fillAccount("seller2@gmail.com", "123")}
-                className="w-full flex items-center justify-between rounded-lg border border-teal-200 bg-teal-50/50 p-2.5 text-xs text-left hover:bg-teal-100/60 transition"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-200 text-teal-800">
-                    <Store size={14} />
-                  </span>
-                  <div>
-                    <strong className="text-teal-900">Seller 2: Toko Agro Jaya</strong>
-                    <p className="text-ink-500 text-[11px]">seller2@gmail.com • WA: +6281987654321</p>
-                  </div>
-                </div>
-                <ArrowRight size={14} className="text-teal-800" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fillAccount("admin@gmail.com", "123")}
-                className="w-full flex items-center justify-between rounded-lg border border-purple-200 bg-purple-50/50 p-2.5 text-xs text-left hover:bg-purple-100/60 transition"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-200 text-purple-800">
-                    <Shield size={14} />
-                  </span>
-                  <div>
-                    <strong className="text-purple-900">Admin (Kelola Sistem)</strong>
-                    <p className="text-ink-500 text-[11px]">admin@gmail.com • pw: 123</p>
-                  </div>
-                </div>
-                <ArrowRight size={14} className="text-purple-800" />
-              </button>
-            </div>
-          </div>
-
           {/* Navigasi Daftar */}
-          <div className="mt-6 text-center text-sm text-ink-600">
-            Belum punya akun?{" "}
+          <div className="mt-6 text-center text-sm text-ink-600 border-t border-ink-500/15 pt-5">
+            Belum memiliki akun?{" "}
             <Link href="/register" className="font-semibold text-green-800 hover:underline">
               Daftar sekarang
             </Link>
@@ -177,4 +97,3 @@ export default function LoginPage() {
     </main>
   );
 }
-

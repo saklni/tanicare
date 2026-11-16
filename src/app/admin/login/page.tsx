@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Sprout, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Sprout, ArrowLeft, Mail, Lock, AlertCircle } from "lucide-react";
 import { loginAction } from "@/lib/auth-actions";
 
 export default function Page() {
@@ -12,26 +12,28 @@ export default function Page() {
     <main className="flex min-h-screen items-center justify-center bg-cream-50 p-4">
       <div className="w-full max-w-sm space-y-4">
         <form action={action} className="card bg-white space-y-4 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h1 className="flex items-center gap-2 text-2xl text-green-800 font-bold">
-              <Sprout aria-hidden /> Login Admin
+          <div className="flex items-center justify-between border-b border-ink-500/10 pb-3">
+            <h1 className="flex items-center gap-2 text-xl text-green-800 font-bold">
+              <Sprout aria-hidden /> Login Administrator
             </h1>
           </div>
-          <p className="text-xs text-ink-600">Gunakan akun <strong>admin@gmail.com</strong> (pw: <strong>123</strong>)</p>
 
           <div>
             <label className="label" htmlFor="email">
-              Email
+              Email Administrator
             </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              defaultValue="admin@gmail.com"
-              autoComplete="username"
-              className="input"
-            />
+            <div className="relative">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="admin@email.com"
+                autoComplete="username"
+                className="input pl-10"
+              />
+              <Mail size={16} className="absolute left-3.5 top-3.5 text-ink-500 pointer-events-none" />
+            </div>
           </div>
 
           <div>
@@ -44,10 +46,11 @@ export default function Page() {
                 name="password"
                 type={show ? "text" : "password"}
                 required
-                defaultValue="123"
+                placeholder="Masukkan password"
                 autoComplete="current-password"
-                className="input pr-12"
+                className="input pl-10 pr-12"
               />
+              <Lock size={16} className="absolute left-3.5 top-3.5 text-ink-500 pointer-events-none" />
               <button
                 type="button"
                 className="absolute right-1 top-0.5 btn-ghost !px-3"
@@ -60,13 +63,14 @@ export default function Page() {
           </div>
 
           {state?.error && (
-            <p role="alert" className="text-sm font-semibold text-danger">
-              {state.error}
-            </p>
+            <div className="rounded-lg bg-danger/10 p-3 text-sm font-medium text-danger flex items-center gap-2" role="alert">
+              <AlertCircle size={16} className="shrink-0" />
+              <span>{state.error}</span>
+            </div>
           )}
 
-          <button className="btn-primary w-full" disabled={pending}>
-            {pending ? "Masuk…" : "Masuk"}
+          <button className="btn-primary w-full !py-2.5 shadow-sm" disabled={pending}>
+            {pending ? "Memverifikasi…" : "Masuk"}
           </button>
 
           <div className="border-t border-ink-500/10 pt-3 text-center">
