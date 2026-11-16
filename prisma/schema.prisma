@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  BUYER
+  SELLER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String?
+  phone     String?
+  role      Role     @default(BUYER)
+  avatarUrl String?  @map("avatar_url")
+  address   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relasi Role:
+  // Seller: mengelola produk & toko
+  products  Product[] @relation("SellerProducts")
+  store     Store?
+
+  // Buyer: riwayat pesanan
+  orders    Order[]   @relation("BuyerOrders")
+
+  @@map("users")
+}
+
+model Store {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  whatsappNumber String   @default("") @map("whatsapp_number")
+  address        String?
+  sellerId       String   @unique @map("seller_id")
+  seller         User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("stores")
+}
+
+model Product {
+  id                 String      @id @default(uuid())
+  sku                String?     @unique
+  name               String
+  slug               String      @unique
+  category           String
+  description        String?
+  price              Decimal     @db.Decimal(12, 2)
+  stock              Int         @default(0)
+  imagePath          String?     @map("image_path")
+  isFeatured         Boolean     @default(false) @map("is_featured")
+  isActive           Boolean     @default(true) @map("is_active")
+  activeIngredient   String?     @map("active_ingredient")
+  benefits           String[]
+  usageInstructions  String?     @map("usage_instructions")
+  labelDosage        String?     @map("label_dosage")
+  warnings           String[]
+  manufacturer       String?
+  registrationNumber String?     @map("registration_number")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+
+  sellerId           String?     @map("seller_id")
+  seller             User?       @relation("SellerProducts", fields: [sellerId], references: [id], onDelete: SetNull)
+  orderItems         OrderItem[]
+
+  @@map("products")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderNumber     String      @unique @map("order_number")
+  buyerId         String      @map("buyer_id")
+  buyer           User        @relation("BuyerOrders", fields: [buyerId], references: [id], onDelete: Cascade)
+  totalPrice      Decimal     @db.Decimal(12, 2) @map("total_price")
+  status          OrderStatus @default(PENDING)
+  deliveryAddress String?     @map("delivery_address")
+  buyerPhone      String?     @map("buyer_phone")
+  notes           String?
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  items           OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String   @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String   @map("product_id")
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int      @default(1)
+  price     Decimal  @db.Decimal(12, 2)
+
+  @@map("order_items")
+}
+
+model StoreSettings {
+  id               String   @id @default(uuid())
+  storeName        String   @default("TaniCare") @map("store_name")
+  whatsappNumber   String   @default("") @map("whatsapp_number")
+  storeDescription String?  @map("store_description")
+  address          String?
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("store_settings")
+}
