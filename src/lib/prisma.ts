@@ -41,4 +41,5 @@ if (process.env.NODE_ENV !== "production") {
   globalForPrisma.pool = pool;
 }
 
+export { Role, OrderStatus } from "@prisma/client";
 export * from "@prisma/client";

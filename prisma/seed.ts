@@ -1,5 +1,6 @@
 import "dotenv/config";
-import { prisma, Role, OrderStatus } from "../src/lib/prisma";
+import { prisma } from "../src/lib/prisma";
+import { Role, OrderStatus } from "@prisma/client";
 
 async function main() {
   console.log("🌱 Menjalankan Seeder TaniCare (Admin & Multi-Seller dengan Nomor WA Berbeda)...");
