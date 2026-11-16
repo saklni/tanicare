@@ -6,6 +6,7 @@ import { getSessionUser } from "./auth-session";
 import { normalizePhone } from "./whatsapp";
 import { slugify } from "./format";
 import { createClient as createSupabaseServerClient } from "./supabase/server";
+import { publicClient } from "./supabase/public";
 
 export type SellerActionState = { error?: string; ok?: string } | undefined;
 
@@ -31,37 +32,77 @@ export async function updateSellerStoreAction(_: SellerActionState, fd: FormData
   }
 
   try {
-    const existingStore = await prisma.store.findFirst({
-      where: { sellerId: session.id },
-    });
+    let existingStore: any = null;
+    try {
+      existingStore = await prisma.store.findFirst({
+        where: { sellerId: session.id },
+      });
+    } catch {}
+
+    if (!existingStore) {
+      try {
+        const { data: supaStore } = await publicClient()
+          .from("stores")
+          .select("*")
+          .eq("seller_id", session.id)
+          .maybeSingle();
+        if (supaStore) existingStore = supaStore;
+      } catch {}
+    }
 
     if (existingStore) {
-      await prisma.store.update({
-        where: { id: existingStore.id },
-        data: {
-          name: storeName,
-          whatsappNumber: wa || existingStore.whatsappNumber,
-          address: address || existingStore.address,
-          description: description || existingStore.description,
-        },
-      });
+      try {
+        await prisma.store.update({
+          where: { id: existingStore.id },
+          data: {
+            name: storeName,
+            whatsappNumber: wa || existingStore.whatsappNumber || existingStore.whatsapp_number,
+            address: address || existingStore.address,
+            description: description || existingStore.description,
+          },
+        });
+      } catch {
+        await publicClient()
+          .from("stores")
+          .update({
+            name: storeName,
+            whatsapp_number: wa || existingStore.whatsappNumber || existingStore.whatsapp_number,
+            address: address || existingStore.address,
+            description: description || existingStore.description,
+          })
+          .eq("id", existingStore.id);
+      }
     } else {
-      await prisma.store.create({
-        data: {
-          sellerId: session.id,
+      try {
+        await prisma.store.create({
+          data: {
+            sellerId: session.id,
+            name: storeName,
+            whatsappNumber: wa || "",
+            address,
+            description,
+          },
+        });
+      } catch {
+        await publicClient().from("stores").insert({
+          seller_id: session.id,
           name: storeName,
-          whatsappNumber: wa || "",
+          whatsapp_number: wa || "",
           address,
           description,
-        },
-      });
+        });
+      }
     }
 
     if (wa) {
-      await prisma.user.update({
-        where: { id: session.id },
-        data: { phone: wa },
-      });
+      try {
+        await prisma.user.update({
+          where: { id: session.id },
+          data: { phone: wa },
+        });
+      } catch {
+        await publicClient().from("users").update({ phone: wa }).eq("id", session.id);
+      }
     }
 
     revalidatePath("/", "layout");
@@ -142,44 +183,112 @@ export async function saveSellerProductAction(_: SellerActionState, fd: FormData
   try {
     if (id) {
       // Pastikan produk milik seller ini
-      const existing = await prisma.product.findUnique({ where: { id } });
+      let existing: any = null;
+      try {
+        existing = await prisma.product.findUnique({ where: { id } });
+      } catch {}
+
+      if (!existing) {
+        try {
+          const { data: supaP } = await publicClient().from("products").select("*").eq("id", id).maybeSingle();
+          if (supaP) {
+            existing = {
+              id: supaP.id,
+              sellerId: supaP.seller_id,
+              sku: supaP.sku,
+              imagePath: supaP.image_path,
+            };
+          }
+        } catch {}
+      }
+
       if (!existing) return { error: "Produk tidak ditemukan." };
       if (session.role !== "ADMIN" && existing.sellerId !== session.id) {
         return { error: "Anda tidak berhak mengubah produk milik seller lain." };
       }
 
-      await prisma.product.update({
-        where: { id },
-        data: {
-          name,
-          slug,
-          category,
-          price,
-          stock,
-          sku: sku || existing.sku,
-          description,
-          activeIngredient,
-          usageInstructions,
-          labelDosage,
-          manufacturer,
-          registrationNumber,
-          benefits,
-          warnings,
-          isActive,
-          isFeatured,
-          imagePath: imagePath ?? existing.imagePath,
-        },
-      });
+      try {
+        await prisma.product.update({
+          where: { id },
+          data: {
+            name,
+            slug,
+            category,
+            price,
+            stock,
+            sku: sku || existing.sku,
+            description,
+            activeIngredient,
+            usageInstructions,
+            labelDosage,
+            manufacturer,
+            registrationNumber,
+            benefits,
+            warnings,
+            isActive,
+            isFeatured,
+            imagePath: imagePath ?? existing.imagePath,
+          },
+        });
+      } catch {
+        await publicClient()
+          .from("products")
+          .update({
+            name,
+            slug,
+            category,
+            price,
+            stock,
+            sku: sku || existing.sku,
+            description,
+            active_ingredient: activeIngredient,
+            usage_instructions: usageInstructions,
+            label_dosage: labelDosage,
+            manufacturer,
+            registration_number: registrationNumber,
+            benefits,
+            warnings,
+            is_active: isActive,
+            is_featured: isFeatured,
+            image_path: imagePath ?? existing.imagePath,
+          })
+          .eq("id", id);
+      }
     } else {
       // Pastikan slug unik
       let uniqueSlug = slug;
-      const count = await prisma.product.count({ where: { slug: uniqueSlug } });
-      if (count > 0) {
-        uniqueSlug = `${slug}-${Date.now().toString().slice(-4)}`;
-      }
+      try {
+        const count = await prisma.product.count({ where: { slug: uniqueSlug } });
+        if (count > 0) {
+          uniqueSlug = `${slug}-${Date.now().toString().slice(-4)}`;
+        }
+      } catch {}
 
-      await prisma.product.create({
-        data: {
+      try {
+        await prisma.product.create({
+          data: {
+            name,
+            slug: uniqueSlug,
+            category,
+            price,
+            stock,
+            sku: sku || `SKU-${Date.now().toString().slice(-6)}`,
+            description,
+            activeIngredient,
+            usageInstructions,
+            labelDosage,
+            manufacturer,
+            registrationNumber,
+            benefits,
+            warnings,
+            isActive,
+            isFeatured,
+            imagePath: imagePath || "/images/products/roundup.svg",
+            sellerId: session.id, // Mengaitkan otomatis ke Seller yang sedang login
+          },
+        });
+      } catch {
+        await publicClient().from("products").insert({
           name,
           slug: uniqueSlug,
           category,
@@ -187,19 +296,19 @@ export async function saveSellerProductAction(_: SellerActionState, fd: FormData
           stock,
           sku: sku || `SKU-${Date.now().toString().slice(-6)}`,
           description,
-          activeIngredient,
-          usageInstructions,
-          labelDosage,
+          active_ingredient: activeIngredient,
+          usage_instructions: usageInstructions,
+          label_dosage: labelDosage,
           manufacturer,
-          registrationNumber,
+          registration_number: registrationNumber,
           benefits,
           warnings,
-          isActive,
-          isFeatured,
-          imagePath: imagePath || "/images/products/roundup.svg",
-          sellerId: session.id, // Mengaitkan otomatis ke Seller yang sedang login
-        },
-      });
+          is_active: isActive,
+          is_featured: isFeatured,
+          image_path: imagePath || "/images/products/roundup.svg",
+          seller_id: session.id,
+        });
+      }
     }
 
     revalidatePath("/", "layout");
@@ -221,13 +330,31 @@ export async function deleteSellerProductAction(productId: string) {
     throw new Error("Akses ditolak.");
   }
 
-  const product = await prisma.product.findUnique({ where: { id: productId } });
+  let product: any = null;
+  try {
+    product = await prisma.product.findUnique({ where: { id: productId } });
+  } catch {}
+
+  if (!product) {
+    try {
+      const { data: supaP } = await publicClient().from("products").select("id, seller_id").eq("id", productId).maybeSingle();
+      if (supaP) {
+        product = { id: supaP.id, sellerId: supaP.seller_id };
+      }
+    } catch {}
+  }
+
   if (!product) return;
   if (session.role !== "ADMIN" && product.sellerId !== session.id) {
     throw new Error("Anda tidak memiliki izin menghapus produk ini.");
   }
 
-  await prisma.product.delete({ where: { id: productId } });
+  try {
+    await prisma.product.delete({ where: { id: productId } });
+  } catch {
+    await publicClient().from("products").delete().eq("id", productId);
+  }
+
   revalidatePath("/", "layout");
   revalidatePath("/seller");
   revalidatePath("/produk");
@@ -242,16 +369,33 @@ export async function toggleSellerProductAction(productId: string, currentStatus
     throw new Error("Akses ditolak.");
   }
 
-  const product = await prisma.product.findUnique({ where: { id: productId } });
+  let product: any = null;
+  try {
+    product = await prisma.product.findUnique({ where: { id: productId } });
+  } catch {}
+
+  if (!product) {
+    try {
+      const { data: supaP } = await publicClient().from("products").select("id, seller_id").eq("id", productId).maybeSingle();
+      if (supaP) {
+        product = { id: supaP.id, sellerId: supaP.seller_id };
+      }
+    } catch {}
+  }
+
   if (!product) return;
   if (session.role !== "ADMIN" && product.sellerId !== session.id) {
     throw new Error("Akses ditolak.");
   }
 
-  await prisma.product.update({
-    where: { id: productId },
-    data: { isActive: !currentStatus },
-  });
+  try {
+    await prisma.product.update({
+      where: { id: productId },
+      data: { isActive: !currentStatus },
+    });
+  } catch {
+    await publicClient().from("products").update({ is_active: !currentStatus }).eq("id", productId);
+  }
 
   revalidatePath("/", "layout");
   revalidatePath("/seller");

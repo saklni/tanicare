@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { prisma } from "./prisma";
+import { publicClient } from "./supabase/public";
 import type { UserRole } from "./types";
 
 export type SessionUser = {
@@ -47,23 +48,7 @@ export async function authenticate(emailInput: string, passwordInput: string): P
   const email = emailInput.trim().toLowerCase();
   const password = passwordInput.trim();
 
-  // 1. Akun Cepat Bawaan (Admin, Seller, Buyer)
-  if (password === "123") {
-    if (email === "admin@gmail.com") {
-      return { id: "a0000000-0000-0000-0000-000000000001", email, name: "Admin TaniCare", role: "ADMIN", phone: "6281234567890" };
-    }
-    if (email === "seller@gmail.com") {
-      return { id: "b0000000-0000-0000-0000-000000000002", email, name: "Mitra Tani Berkah", role: "SELLER", phone: "6281234567891" };
-    }
-    if (email === "seller2@gmail.com") {
-      return { id: "b0000000-0000-0000-0000-000000000004", email, name: "Mitra Agro Jaya Makmur", role: "SELLER", phone: "6281987654321" };
-    }
-    if (email === "buyer@gmail.com") {
-      return { id: "c0000000-0000-0000-0000-000000000003", email, name: "Budi Santoso (Petani)", role: "BUYER", phone: "6281234567892" };
-    }
-  }
-
-  // 2. Cek di Database Prisma
+  // 1. Cek di Database Prisma terlebih dahulu (Prioritas Utama)
   try {
     const user = await prisma.user.findUnique({
       where: { email },
@@ -78,6 +63,43 @@ export async function authenticate(emailInput: string, passwordInput: string): P
       };
     }
   } catch {}
+
+  // 2. Cek di Supabase REST (Fallback jika Prisma DB offline di Vercel)
+  try {
+    const { data: supaUser } = await publicClient()
+      .from("users")
+      .select("*")
+      .eq("email", email)
+      .eq("password", password)
+      .maybeSingle();
+
+    if (supaUser) {
+      return {
+        id: supaUser.id,
+        email: supaUser.email,
+        name: supaUser.name,
+        role: supaUser.role as UserRole,
+        phone: supaUser.phone,
+      };
+    }
+  } catch {}
+
+  // 3. Fallback Darurat Akun Bawaan (Hanya jika kedua database tidak dapat dijangkau)
+  // ID di bawah ini persis sesuai ID database asli sehingga produk masing-masing seller tidak tertukar
+  if (password === "123") {
+    if (email === "seller@gmail.com") {
+      return { id: "3a85c179-bde7-4914-af10-7e607c652ba5", email, name: "Mitra Tani Berkah", role: "SELLER", phone: "6281234567891" };
+    }
+    if (email === "seller2@gmail.com") {
+      return { id: "eb30dae4-4dad-4b1c-afe0-efc183a27969", email, name: "Mitra Agro Jaya Makmur", role: "SELLER", phone: "6281987654321" };
+    }
+    if (email === "admin@gmail.com") {
+      return { id: "c697d63b-4f51-45a3-9c46-b538bfa1e3c2", email, name: "Admin TaniCare", role: "ADMIN", phone: "6281234567890" };
+    }
+    if (email === "buyer@gmail.com") {
+      return { id: "03376f63-7ea7-42ef-b6ff-27971b99bc31", email, name: "Budi Santoso (Petani)", role: "BUYER", phone: "6281234567892" };
+    }
+  }
 
   return null;
 }

@@ -15,49 +15,36 @@ export default async function SellerDashboardPage({
   const params = searchParams ? await searchParams : {};
   const isSuccess = params.sukses === "1";
 
-  let store = null;
+  let store: any = null;
   let sellerProducts: any[] = [];
+  const currentSellerId = session?.id;
 
-  // 1. Coba ambil dari Prisma
+  // 1. Coba ambil Toko & Produk khusus milik Seller yang sedang login dari Prisma
   try {
-    if (session) {
+    if (currentSellerId) {
       store = await prisma.store.findFirst({
-        where: { sellerId: session.id },
+        where: { sellerId: currentSellerId },
         include: { seller: true },
       });
 
       sellerProducts = await prisma.product.findMany({
-        where: { sellerId: session.id },
+        where: { sellerId: currentSellerId },
         orderBy: { createdAt: "desc" },
       });
     }
+  } catch (err) {
+    console.error("Prisma seller query error:", err);
+  }
 
-    if (!store) {
-      store = await prisma.store.findFirst({
-        include: { seller: true },
-      });
-      if (store && sellerProducts.length === 0) {
-        sellerProducts = await prisma.product.findMany({
-          where: { sellerId: store.sellerId },
-          orderBy: { createdAt: "desc" },
-        });
-      }
-    }
-  } catch {}
-
-  // 2. Fallback Supabase REST API (Aktif di Vercel)
-  if (sellerProducts.length === 0) {
+  // 2. Fallback Supabase REST API untuk Produk Milik Seller Ini (Hanya ambil produk seller ini!)
+  if (currentSellerId && sellerProducts.length === 0) {
     try {
-      let query = publicClient()
+      const { data: supaP } = await publicClient()
         .from("products")
         .select("*")
+        .eq("seller_id", currentSellerId)
         .order("created_at", { ascending: false });
 
-      if (session?.id) {
-        query = query.eq("seller_id", session.id);
-      }
-
-      const { data: supaP } = await query;
       if (supaP && supaP.length > 0) {
         sellerProducts = supaP.map((p: any) => ({
           id: p.id,
@@ -70,36 +57,17 @@ export default async function SellerDashboardPage({
           isActive: p.is_active,
           isFeatured: p.is_featured,
         }));
-      } else {
-        const { data: allP } = await publicClient()
-          .from("products")
-          .select("*")
-          .limit(6)
-          .order("created_at", { ascending: false });
-
-        if (allP && allP.length > 0) {
-          sellerProducts = allP.map((p: any) => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            category: p.category,
-            price: Number(p.price),
-            stock: p.stock,
-            imagePath: p.image_path,
-            isActive: p.is_active,
-            isFeatured: p.is_featured,
-          }));
-        }
       }
     } catch {}
   }
 
-  if (!store) {
+  // 3. Fallback Supabase REST API untuk Toko Milik Seller Ini (Hanya ambil toko seller ini!)
+  if (currentSellerId && !store) {
     try {
       const { data: supaStore } = await publicClient()
         .from("stores")
         .select("*")
-        .limit(1)
+        .eq("seller_id", currentSellerId)
         .maybeSingle();
 
       if (supaStore) {
@@ -115,12 +83,12 @@ export default async function SellerDashboardPage({
   }
 
   const sellerInfo = {
-    storeName: store?.name ?? "Toko Berkah Tani Mandiri",
-    ownerName: session?.name ?? store?.seller?.name ?? "Mitra Tani Berkah",
-    email: session?.email ?? store?.seller?.email ?? "seller@gmail.com",
-    whatsapp: store?.whatsappNumber || "6281234567891",
-    address: store?.address ?? "Jl. Pertanian Makmur No. 45, Pare, Kediri, Jawa Timur",
-    description: store?.description ?? "Pusat sarana produksi pertanian terlengkap dan terpercaya.",
+    storeName: store?.name || (session?.name ? `Toko ${session.name}` : "Toko Seller"),
+    ownerName: session?.name || store?.seller?.name || "Mitra Seller",
+    email: session?.email || store?.seller?.email || "-",
+    whatsapp: store?.whatsappNumber || session?.phone || "6281234567891",
+    address: store?.address || "Belum diatur",
+    description: store?.description || "Pusat sarana produksi pertanian terpercaya.",
   };
 
   const formattedProducts = sellerProducts.map((p) => ({

@@ -66,10 +66,10 @@ export default async function Page({
         imagePath: p.imagePath,
         isActive: p.isActive,
         isFeatured: p.isFeatured,
-        sellerName: p.seller?.name ?? "Mitra Tani Berkah",
-        sellerEmail: p.seller?.email ?? "seller@gmail.com",
-        sellerPhone: p.seller?.store?.whatsappNumber || p.seller?.phone || "6281234567891",
-        storeName: p.seller?.store?.name ?? "Toko Berkah Tani Mandiri",
+        sellerName: p.seller?.name ?? "Mitra Seller",
+        sellerEmail: p.seller?.email ?? "-",
+        sellerPhone: p.seller?.store?.whatsappNumber || p.seller?.phone || "",
+        storeName: p.seller?.store?.name ?? (p.seller?.name ? `Toko ${p.seller.name}` : "Toko Pertanian"),
       }));
     }
   } catch (err) {
@@ -102,35 +102,43 @@ export default async function Page({
             imagePath: p.image_path,
             isActive: p.is_active,
             isFeatured: p.is_featured,
-            sellerName: p.seller?.name ?? "Mitra Tani Berkah",
-            sellerEmail: p.seller?.email ?? "seller@gmail.com",
-            sellerPhone: storeObj?.whatsapp_number || p.seller?.phone || "6281234567891",
-            storeName: storeObj?.name ?? "Toko Berkah Tani Mandiri",
+            sellerName: p.seller?.name ?? "Mitra Seller",
+            sellerEmail: p.seller?.email ?? "-",
+            sellerPhone: storeObj?.whatsapp_number || p.seller?.phone || "",
+            storeName: storeObj?.name ?? (p.seller?.name ? `Toko ${p.seller.name}` : "Toko Pertanian"),
           };
         });
       } else {
-        // Fallback langsung tabel products jika join PostgREST belum tersedia
-        const { data: rawData } = await publicClient()
-          .from("products")
-          .select("*")
-          .order("created_at", { ascending: false });
+        // Fallback langsung tabel products jika join PostgREST belum tersedia, hubungkan dengan tabel users & stores
+        const [{ data: rawData }, { data: usersData }, { data: storesData }] = await Promise.all([
+          publicClient().from("products").select("*").order("created_at", { ascending: false }),
+          publicClient().from("users").select("id, name, email, phone"),
+          publicClient().from("stores").select("id, seller_id, name, whatsapp_number"),
+        ]);
+
+        const userMap = new Map((usersData ?? []).map((u: any) => [u.id, u]));
+        const storeMap = new Map((storesData ?? []).map((s: any) => [s.seller_id, s]));
 
         if (rawData && rawData.length > 0) {
-          products = rawData.map((p: any) => ({
-            id: p.id,
-            name: p.name,
-            slug: p.slug,
-            category: p.category,
-            price: Number(p.price),
-            stock: p.stock,
-            imagePath: p.image_path,
-            isActive: p.is_active,
-            isFeatured: p.is_featured,
-            sellerName: "Mitra Tani Berkah",
-            sellerEmail: "seller@gmail.com",
-            sellerPhone: "6281234567891",
-            storeName: "Toko Berkah Tani Mandiri",
-          }));
+          products = rawData.map((p: any) => {
+            const u = userMap.get(p.seller_id);
+            const s = storeMap.get(p.seller_id);
+            return {
+              id: p.id,
+              name: p.name,
+              slug: p.slug,
+              category: p.category,
+              price: Number(p.price),
+              stock: p.stock,
+              imagePath: p.image_path,
+              isActive: p.is_active,
+              isFeatured: p.is_featured,
+              sellerName: u?.name ?? "Mitra Seller",
+              sellerEmail: u?.email ?? "-",
+              sellerPhone: s?.whatsapp_number || u?.phone || "",
+              storeName: s?.name ?? (u?.name ? `Toko ${u.name}` : "Toko Pertanian"),
+            };
+          });
         }
       }
     } catch (supaErr) {

@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import SellerProductForm from "@/components/seller/SellerProductForm";
 import { getSessionUser } from "@/lib/auth-session";
 import { prisma } from "@/lib/prisma";
+import { publicClient } from "@/lib/supabase/public";
 
 export const metadata: Metadata = {
   title: "Edit Produk Toko - Dashboard Seller TaniCare",
@@ -19,9 +20,47 @@ export default async function EditProdukSellerPage({
   }
 
   const { id } = await params;
-  const p = await prisma.product.findUnique({
-    where: { id },
-  });
+  let p: any = null;
+
+  try {
+    p = await prisma.product.findUnique({
+      where: { id },
+    });
+  } catch {}
+
+  if (!p) {
+    try {
+      const { data: supaP } = await publicClient()
+        .from("products")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (supaP) {
+        p = {
+          id: supaP.id,
+          name: supaP.name,
+          slug: supaP.slug,
+          category: supaP.category,
+          price: Number(supaP.price),
+          stock: supaP.stock,
+          sku: supaP.sku,
+          description: supaP.description,
+          activeIngredient: supaP.active_ingredient,
+          benefits: supaP.benefits,
+          usageInstructions: supaP.usage_instructions,
+          labelDosage: supaP.label_dosage,
+          warnings: supaP.warnings,
+          manufacturer: supaP.manufacturer,
+          registrationNumber: supaP.registration_number,
+          imagePath: supaP.image_path,
+          isActive: supaP.is_active,
+          isFeatured: supaP.is_featured,
+          sellerId: supaP.seller_id,
+        };
+      }
+    } catch {}
+  }
 
   if (!p) notFound();
 

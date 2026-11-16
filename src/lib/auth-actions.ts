@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { authenticate, setSessionUser, clearSessionUser } from "./auth-session";
 import { prisma } from "./prisma";
+import { publicClient } from "./supabase/public";
 import type { UserRole } from "./types";
 
 export type AuthState = { error?: string; success?: boolean } | undefined;
@@ -55,36 +56,78 @@ export async function registerAction(_: AuthState, fd: FormData): Promise<AuthSt
   }
 
   try {
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
-      return { error: "Email sudah terdaftar. Silakan gunakan email lain atau langsung masuk." };
-    }
+    let newUser: any = null;
 
-    const newUser = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password,
-        phone: phone || null,
-        role: role as any,
-        store:
-          role === "SELLER"
-            ? {
-                create: {
-                  name: `Toko ${name}`,
-                  description: "Mitra toko pertanian TaniCare.",
-                  whatsappNumber: phone || "",
-                },
-              }
-            : undefined,
-      },
-    });
+    try {
+      const existing = await prisma.user.findUnique({ where: { email } });
+      if (existing) {
+        return { error: "Email sudah terdaftar. Silakan gunakan email lain atau langsung masuk." };
+      }
+
+      newUser = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password,
+          phone: phone || null,
+          role: role as any,
+          store:
+            role === "SELLER"
+              ? {
+                  create: {
+                    name: `Toko ${name}`,
+                    description: "Mitra toko pertanian TaniCare.",
+                    whatsappNumber: phone || "",
+                  },
+                }
+              : undefined,
+        },
+      });
+    } catch {
+      // Supabase fallback jika Prisma offline di serverless Vercel
+      const { data: supaExisting } = await publicClient()
+        .from("users")
+        .select("id")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (supaExisting) {
+        return { error: "Email sudah terdaftar. Silakan gunakan email lain atau langsung masuk." };
+      }
+
+      const { data: supaCreated, error: supaErr } = await publicClient()
+        .from("users")
+        .insert({
+          name,
+          email,
+          password,
+          phone: phone || null,
+          role: role,
+        })
+        .select()
+        .single();
+
+      if (supaErr || !supaCreated) {
+        return { error: "Gagal mendaftar ke sistem database." };
+      }
+
+      newUser = supaCreated;
+
+      if (role === "SELLER") {
+        await publicClient().from("stores").insert({
+          seller_id: newUser.id,
+          name: `Toko ${name}`,
+          description: "Mitra toko pertanian TaniCare.",
+          whatsapp_number: phone || "",
+        });
+      }
+    }
 
     const sessionUser = {
       id: newUser.id,
       email: newUser.email,
       name: newUser.name,
-      role: newUser.role as UserRole,
+      role: (newUser.role || role) as UserRole,
       phone: newUser.phone,
     };
 
