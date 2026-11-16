@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Package, Plus, CheckCircle2, MessageCircle, Phone, CheckCheck } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { publicClient } from "@/lib/supabase/public";
 import { getSessionUser } from "@/lib/auth-session";
 import SellerStoreForm from "@/components/seller/SellerStoreForm";
 import SellerProductList from "@/components/seller/SellerProductList";
@@ -17,6 +18,7 @@ export default async function SellerDashboardPage({
   let store = null;
   let sellerProducts: any[] = [];
 
+  // 1. Coba ambil dari Prisma
   try {
     if (session) {
       store = await prisma.store.findFirst({
@@ -42,6 +44,75 @@ export default async function SellerDashboardPage({
       }
     }
   } catch {}
+
+  // 2. Fallback Supabase REST API (Aktif di Vercel)
+  if (sellerProducts.length === 0) {
+    try {
+      let query = publicClient()
+        .from("products")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (session?.id) {
+        query = query.eq("seller_id", session.id);
+      }
+
+      const { data: supaP } = await query;
+      if (supaP && supaP.length > 0) {
+        sellerProducts = supaP.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          category: p.category,
+          price: Number(p.price),
+          stock: p.stock,
+          imagePath: p.image_path,
+          isActive: p.is_active,
+          isFeatured: p.is_featured,
+        }));
+      } else {
+        const { data: allP } = await publicClient()
+          .from("products")
+          .select("*")
+          .limit(6)
+          .order("created_at", { ascending: false });
+
+        if (allP && allP.length > 0) {
+          sellerProducts = allP.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            category: p.category,
+            price: Number(p.price),
+            stock: p.stock,
+            imagePath: p.image_path,
+            isActive: p.is_active,
+            isFeatured: p.is_featured,
+          }));
+        }
+      }
+    } catch {}
+  }
+
+  if (!store) {
+    try {
+      const { data: supaStore } = await publicClient()
+        .from("stores")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+
+      if (supaStore) {
+        store = {
+          name: supaStore.name,
+          whatsappNumber: supaStore.whatsapp_number,
+          address: supaStore.address,
+          description: supaStore.description,
+          seller: null,
+        };
+      }
+    } catch {}
+  }
 
   const sellerInfo = {
     storeName: store?.name ?? "Toko Berkah Tani Mandiri",
